@@ -1,0 +1,8 @@
+{
+  "hostname": "fully.qualified.domain.name",
+  "port"  :   57475,
+  "listen":   true,
+  "ip"    :   "127.0.0.1",
+  "drives":   "/dev/",
+  "apikey":   ""
+}
