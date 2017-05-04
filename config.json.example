@@ -1,8 +1,10 @@
 {
-  "hostname": "fully.qualified.domain.name",
-  "port"  :   57475,
-  "listen":   true,
-  "ip"    :   "127.0.0.1",
-  "drives":   "/dev/",
-  "apikey":   ""
+  "myname"      :   "fully.qualified.domain.name",
+  "portno"      :   57475,
+  "listen"      :   true,
+  "ipaddr"      :   "127.0.0.1",
+  "drives"      :   "/dev/",
+  "apikey"      :   "LetMeIn",
+  "server"      :   "localhost",
+  "srvprt"      :   57473
 }
