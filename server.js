@@ -8,8 +8,11 @@ const diskinfo = require('diskinfo');
 const async = require('asyncawait/async');
 const await = require('asyncawait/await');
 
+// Big Fish...
 const VERSION_MAJOR = 0;
+// ...Little Fish
 const VERSION_MINOR = 0;
+// Cardboard box?
 const VERSION_PATCH = 3;
 
 // Override these by a config JSON object, see config.json.example for details
