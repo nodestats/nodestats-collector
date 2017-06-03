@@ -49,14 +49,12 @@ const mkDrives =() => {
     });
 };
 
+let stats;
+
 const mkStats = async(() => {
     let DRIVES = await(mkDrives());
     console.log("mKSTats done");
     return {
-        'VERSION_MAJOR' : VERSION_MAJOR,
-        'VERSION_MINOR' : VERSION_MINOR,
-        'VERSION_PATCH' : VERSION_PATCH,
-        'HOSTNAME'      : config.myname ? config.myname : os.hostname(),
         'OS'            : os.platform(),
         'ARCH'          : os.arch(),
         'RELEASE'       : os.release(),
@@ -67,28 +65,27 @@ const mkStats = async(() => {
         'DRIVES'        : DRIVES,
         'INTERACES'     : os.networkInterfaces(),
         'IP'            : config.ipaddr,
-        'PORT'          : config.portno,
-        'TIMESTAMP'     : new Date().toISOString()
+        'PORT'          : config.portno
     };
 });
 
-const mkPayload = function() {
+const mkPayload = async(function() {
     return {
-        apikey: config.apikey,
-            payload: stats
+        'VERSION_MAJOR' : VERSION_MAJOR,
+        'VERSION_MINOR' : VERSION_MINOR,
+        'VERSION_PATCH' : VERSION_PATCH,
+        'HOSTNAME'      : config.myname ? config.myname : os.hostname(),
+        'APIKEY'        : config.apikey,
+        'PAYLOAD'       : stats,
+        'TIMESTAMP'     : new Date().toISOString()
     };
-};
-
-let stats;
+});
 
 let schedule;
 
 //define one
 const scheduler = async(() => {
-    stats = await(function(){
-        return await(mkStats());
-    }());
-
+    stats = await(mkStats());
     if ((config.apikey) && (config.server) && (config.portno)) {
         // If we have a key & server, they probably want us to post to something...
         let options = {
@@ -106,7 +103,7 @@ const scheduler = async(() => {
         req.on('error', function (e) {
             console.log('problem with request: ' + e.message);
         });
-        req.write(JSON.stringify(mkPayload()));
+        req.write(JSON.stringify(await(mkPayload())));
         req.end();
     }
 });
