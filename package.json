@@ -5,7 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "asyncawait": "^1.0.6",
-    "diskinfo": "git+https://github.com/damien-otis/diskinfo.git",
+    "diskinfo": "git+https://github.com/notestats/diskinfo.git",
     "jsonfile": "^3.0.0",
     "merge": "^1.2.0"
   },

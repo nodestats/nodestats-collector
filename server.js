@@ -34,33 +34,7 @@ try {
     console.info("  --Time to die. x");
     process.exit();
 }
-if((config.listen) || (config.apikey) && (config.server) && (config.srvprt)) {
-    setTimeout(async(function(){
-        stats = await(mkStats());
-        if((config.apikey) && (config.server) && (config.portno)) {
-            // If we have a key & server, they probably want us to post to something...
-            let options = {
-                hostname: config.server,
-                port: config.srvprt,
-                path: '/',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            };
-            console.log(options);
-            // POST "/ping"
-            let req = http.request(options, function(res) {
-            });
-            req.on('error', function(e) {
-                console.log('problem with request: ' + e.message);
-            });
-            req.write(JSON.stringify(stats));
-            req.end();
-        }
-    // EVERY 60 SECONDS
-    }, config.repeat*1000));
-}
+
 
 const driveCheck = new RegExp(config.drives);
 const mkDrives =() => {
@@ -77,6 +51,7 @@ const mkDrives =() => {
 
 const mkStats = async(() => {
     let DRIVES = await(mkDrives());
+    console.log("mKSTats done");
     return {
         'VERSION_MAJOR' : VERSION_MAJOR,
         'VERSION_MINOR' : VERSION_MINOR,
@@ -97,13 +72,65 @@ const mkStats = async(() => {
     };
 });
 
-let stats = mkStats();
+const mkPayload = function() {
+    return {
+        apikey: config.apikey,
+            payload: stats
+    };
+};
+
+let stats;
+
+let schedule;
+
+//define one
+const scheduler = async(() => {
+    console.log('ok... ' + new Date);
+    console.info("This is the scheduler calling, your time is due...");
+    console.info("and running!");
+
+    stats = await(function(){
+        console.log("Scheulder making stats");
+        return await(mkStats());
+    }());
+
+    console.log("stats done");
+    if ((config.apikey) && (config.server) && (config.portno)) {
+        console.log("tryin gto HTTP");
+        // If we have a key & server, they probably want us to post to something...
+        let options = {
+            hostname: config.server,
+            port: config.srvprt,
+            path: '/',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        console.log(options);
+        // POST "/ping"
+        let req = http.request(options, function (res) {
+        });
+        req.on('error', function (e) {
+            console.log('problem with request: ' + e.message);
+        });
+        req.write(JSON.stringify(mkPayload()));
+        req.end();
+    }
+});
+
+//now do one
+scheduler();
 
 const requestHandler = (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(stats));
+    res.end(JSON.stringify(mkPayload()));
 };
 
+if((config.listen) || (config.apikey) && (config.server) && (config.srvprt)) {
+    schedule = setInterval(scheduler, 60000);
+
+}
 const server = http.createServer(requestHandler);
 
 // Should we start the HTTP server... if you have not set a SERVER and APIKEY then this is the ONLY use we have...
@@ -111,6 +138,3 @@ if(config.listen) {
     server.listen(config.portno, config.ipaddr);
     console.log("nodestats-collector is listening on http://"+config.ipaddr+":"+config.portno+"/");
 }
-
-
-
