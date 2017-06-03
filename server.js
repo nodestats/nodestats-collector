@@ -85,18 +85,11 @@ let schedule;
 
 //define one
 const scheduler = async(() => {
-    console.log('ok... ' + new Date);
-    console.info("This is the scheduler calling, your time is due...");
-    console.info("and running!");
-
     stats = await(function(){
-        console.log("Scheulder making stats");
         return await(mkStats());
     }());
 
-    console.log("stats done");
     if ((config.apikey) && (config.server) && (config.portno)) {
-        console.log("tryin gto HTTP");
         // If we have a key & server, they probably want us to post to something...
         let options = {
             hostname: config.server,
@@ -107,7 +100,6 @@ const scheduler = async(() => {
                 'Content-Type': 'application/json',
             }
         };
-        console.log(options);
         // POST "/ping"
         let req = http.request(options, function (res) {
         });
